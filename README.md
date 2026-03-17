@@ -1,4 +1,4 @@
-# circuitpython_template_layout
+# circuitpython_grid_template_areas
 
 A CircuitPython layout helper inspired by CSS Grid Template Areas in order to reduce UI development iterations.
 
@@ -42,7 +42,7 @@ TEMPLATE = [
 ]
 ```
 
-Creates a 3x4 grid where:
+Creates a 4 column x 3 row grid where:
 
 - Row 1 all cells are merged and named `title`
 - Row 2 cells in column 2, 3 and 4 are merged and named `header`
