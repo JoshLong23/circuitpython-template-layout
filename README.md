@@ -38,6 +38,7 @@ See `examples/simpletest.py` for a complete working example on a displayio-compa
 ## Quick Start
 
 ```python
+import terminalio
 from adafruit_display_text import label
 from circuitpython_grid_template_areas import Layout
 
@@ -47,7 +48,7 @@ TEMPLATE = [
     ["sidebar", "day*", "day*", "day*"],
 ]
 
-layout = Layout(temlate=TEMPLATE, size=(296, 128))
+layout = Layout(template=TEMPLATE, size=(296, 128))
 
 title = layout["title"]
 days = layout["day"]
@@ -57,10 +58,9 @@ title.center(label.Label(font=terminalio.FONT, text="Quick Start"))
 
 for area in days:
     area.center(label.Label(font=terminalio.FONT, text="Day"))
-
-# Attach layout to display root group or main group
-group.append(layout.make_grid_layout())
 ```
+
+For a complete working hardware example including display setup, see `examples/simpletest.py`.
 
 ## Template Syntax
 
@@ -168,7 +168,7 @@ Custom debug options:
 
 ```python
 layout.make_grid_layout(
-    debug_fill = True
+    debug_fill = True,
     debug_grid = 0x808080,
     debug_labels = True,
     debug_outline = False,
@@ -196,22 +196,22 @@ sublayout["temp"].center(...)
 sublayout["wind"].center(...)
 ```
 
-## Area Properties
+## Area Properties and Methods
 
-- `area.name()` Area name
-- `area.col()` Column that the Area starts in
-- `area.row()` Row that the Area starts in
-- `area.col_span()` Number of columns the Area spans
-- `area.row_span()` Number of rows the Area spans
-- `area.width()` Width of the Area
-- `area.height()` Height of the Area
-- `area.top()` Pixel position at top of Area
-- `area.right()` Pixel position at right of Area
-- `area.bottom()` Pixel position at bottom of Area
-- `area.left()` Pixel position at left of Area
-- `area.center_x()` Pixels from Area left edge to center of the Area
-- `area.center_y()` Pixels from Area top edge to center of the Area
-- `area.group()` Area displayio Group
+- `area.name` Area name
+- `area.col` Column that the Area starts in
+- `area.row` Row that the Area starts in
+- `area.col_span` Number of columns the Area spans
+- `area.row_span` Number of rows the Area spans
+- `area.width` Width of the Area
+- `area.height` Height of the Area
+- `area.top` Pixel position at top of Area
+- `area.right` Pixel position at right of Area
+- `area.bottom` Pixel position at bottom of Area
+- `area.left` Pixel position at left of Area
+- `area.center_x` Pixels from Area left edge to center of the Area
+- `area.center_y` Pixels from Area top edge to center of the Area
+- `area.group` Area displayio Group
 
 Elements such as text, shapes or images can be added or removed from each Area's displayio Group using the following:
 
