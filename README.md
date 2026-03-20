@@ -1,91 +1,244 @@
 # circuitpython_grid_template_areas
 
-A CircuitPython layout helper inspired by CSS Grid Template Areas in order to reduce UI development iterations.
+A CircuitPython layout helper inspired by CSS Grid Template Areas.
 
-Originally developed for use on displays such as Adafruit's MagTag and other e-ink/e-paper displays where layouts cannot be refreshed regularly, making visual development and alignment of graphical elements challenging.
+## What this does
+
+Positioning UI elements in displayio can get messy when working with pixel coordinates.
+
+This library lets you define layouts using named grid areas, similar to CSS grid-template-areas, and then place content into those areas easily.
 
 ## Features
 
-- Named areas from a template grid
-- Merged rectangular areas
+- Define layouts using a simple 2D template
+- Named areas for easy access
+- Merge cells into rectangular areas
 - Repeated iterable areas using `*`
-- Easy placement helpers
-- Optional debug overlays
+- Easy content placement helpers
+- Built-in debug overlays
 - Subgrid support
 
-## Files
+## Installation
 
-- `lib/circuitpython_grid_template_areas/` - library code
-- `examples/` - demo scripts
+Copy the library folder to your device:
+`lib/circuitpython_grid_template_areas/`
 
-## Basic idea/example
-
-To create a layout like this:
-
-```
-+-------------------------------------------+
-|                   title                   |
-|-------------------------------------------|
-|           |             header            |
-|  sidebar  |-------------------------------|
-|           |   day   |    day    |   day   |
-+-------------------------------------------+
-```
-
-Create a template like:
+Then import it:
 
 ```python
+from circuitpython_grid_template_areas import Layout
+```
+
+## Running on Hardware
+
+This library does not handle display setup, but it does use displayio to create and handle Groups.
+
+See `examples/simpletest.py` for a complete working example on a displayio-compatible device.
+
+## Quick Start
+
+```python
+from adafruit_display_text import label
+from circuitpython_grid_template_areas import Layout
+
 TEMPLATE = [
     ["title", "title", "title", "title"],
     ["sidebar", "header", "header", "header"],
     ["sidebar", "day*", "day*", "day*"],
 ]
+
+layout = Layout(temlate=TEMPLATE, size=(296, 128))
+
+title = layout["title"]
+days = layout["day"]
+
+# Add content
+title.center(label.Label(font=terminalio.FONT, text="Quick Start"))
+
+for area in days:
+    area.center(label.Label(font=terminalio.FONT, text="Day"))
+
+# Attach layout to display root group or main group
+group.append(layout.make_grid_layout())
 ```
 
-Creates a 4 column x 3 row grid where:
+## Template Syntax
 
-- Row 1 all cells are merged and named `title`
-- Row 2 cells in column 2, 3 and 4 are merged and named `header`
-- Row 3 cells in column 2, 3 and 4 are seperate and iterable e.g. `day[0]` `day[1]` `day[2]`
-- Row 2 and 3 in Column 1 are merged and named `sidebar`
+### Named Areas
 
-A `layout` is created using:
+Cells with the same name are merged in a single rectangular area:
+
+```
+["title", "title", "title"]
+```
+
+---
+
+### Repeated Areas (`*`)
+
+Names ending in `*` create separate, iterable areas:
+
+```
+["day*", "day*", "day*"]
+```
+
+Access them like:
 
 ```python
-layout = Layout(template=TEMPLATE, size=(display.width, display.height))
+for area in layout["day"]:
+    area.append(...)
 ```
 
-Areas within the layout can now be accessed via:
+To loop through a list of values as well as the list of Areas you can use `zip()` to combine iterables:
 
 ```python
-layout["title"]
-layout["header"]
-layout["sidebar"]
-layout["day"][0]
-layout["day"][1]
-layout["day"][2]
+day_areas = layout["day"]
+day_names = ["Mon", "Tue", "Wed"]
+
+for area, text in zip(day_areas, day_names):
+    day_label = label.Label(font=terminalio.FONT, text=text, color=0x000000)
+    area.center(day_label)
 ```
 
-For each Area you can access it's:
+---
 
-- `name` (Area name)
-- `col` (Column that the Area starts in)
-- `row` (Row that the Area starts in)
-- `col_span` (Number of columns the Area spans)
-- `row_span` (Number of rows the Area spans)
-- `width` (Width of the Area)
-- `height` (Height of the Area)
-- `center_x` (Pixels from Area left edge to center of the Area)
-- `center_y` (Pixels from Area top edge to center of the Area)
-- `group` (Area's displayio Group)
+### Empty Cells
+
+Use `.` or `None` to create empty cells:
+
+```python
+["title", ".", "sidebar"]
+```
+
+or
+
+```python
+["title", None, "sidebar"]
+```
+
+---
+
+### Working with Areas
+
+Each area is an object with a display group and helper methods.
+
+#### Add content
+
+```python
+area.add(item)
+```
+
+---
+
+### Place content
+
+```python
+area.place(item, anchor=(0.5, 0.5), offset=(0, 0))
+```
+
+- `anchor` controls alignment (0 = left/top, 1 = right/bottom)
+- `offset` shifts in pixels from that anchor point
+
+---
+
+### Center content
+
+```python
+area.center(item)
+```
+
+---
+
+### Debug Options
+
+Quick debug mode:
+
+```python
+layout.make_grid_layout(debug=True)
+```
+
+This activates the following options:
+
+- Outlines
+- Area name labels
+- Area center markers
+- Grid lines
+
+Custom debug options:
+
+```python
+layout.make_grid_layout(
+    debug_fill = True
+    debug_grid = 0x808080,
+    debug_labels = True,
+    debug_outline = False,
+    debug_centers = 0x808080
+)
+```
+
+---
+
+## Subgrids
+
+You can create a nested layout inside an area.
+
+```python
+sublayout = area.make_subgrid([
+    ["temp", "wind"],
+    ["rain", "humid"]
+])
+```
+
+Use it like a normal layout:
+
+```python
+sublayout["temp"].center(...)
+sublayout["wind"].center(...)
+```
+
+## Area Properties
+
+- `area.name()` Area name
+- `area.col()` Column that the Area starts in
+- `area.row()` Row that the Area starts in
+- `area.col_span()` Number of columns the Area spans
+- `area.row_span()` Number of rows the Area spans
+- `area.width()` Width of the Area
+- `area.height()` Height of the Area
+- `area.top()` Pixel position at top of Area
+- `area.right()` Pixel position at right of Area
+- `area.bottom()` Pixel position at bottom of Area
+- `area.left()` Pixel position at left of Area
+- `area.center_x()` Pixels from Area left edge to center of the Area
+- `area.center_y()` Pixels from Area top edge to center of the Area
+- `area.group()` Area displayio Group
 
 Elements such as text, shapes or images can be added or removed from each Area's displayio Group using the following:
 
-- `.add(*items)`
-- `.append(item)`
-- `.remove(item)`
-- `.clear()`
-- `.place(item, anchor=(0.5, 0.5), offset=(0, 0))`
-- `.center(item)`
+- `area.append(item)` Append a single item to an Area
+- `area.add(*items)` Append multiple items to an Area
+- `area.remove(item)` Remove an item from an Area
+- `area.clear()` Clear all items from an Area
+- `area.place(item, anchor=(0.5, 0.5), offset=(0, 0))` Position an item in an Area
+- `area.center(item)` Center an item in an Area
 
-Areas can also become subgrids by using `.make_subgrid()`. See `examples/subgrid_simpletest.py` for an example.
+## Examples
+
+- `examples/simpletest.py` - basic layout usage
+- `examples/debug_simpletest.py` - debug overlays
+- `examples/subgrid_simpletest.py` - nested layouts
+
+## Rules & Limitations
+
+- Merged areas must form solid rectangles
+- Names cannot be both merged and repeated
+- Templates must be rectangular (all rows same length)
+- Layout size must be explicitly provided
+
+## Status
+
+Early-stage library. API may change.
+
+## Licence
+
+MIT Licence
