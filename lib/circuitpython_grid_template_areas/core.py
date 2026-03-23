@@ -89,8 +89,7 @@ class Area:
             debug_outline=False, 
             debug_labels=False, 
             debug_centers=False, 
-            debug_grid=False,
-            **grid_kwargs
+            debug_grid=False
     ):
         sublayout = Layout(template, (self.width, self.height))
 
@@ -100,8 +99,7 @@ class Area:
             width=self.width,
             height=self.height,
             grid_size=sublayout.grid_size,
-            cell_padding=0,
-            **grid_kwargs
+            cell_padding=0
         )
         sublayout.place_into(grid)
         self.group.append(grid)
@@ -387,8 +385,8 @@ class Layout:
         place_areas_into_grid(grid_layout, self.areas)
         return grid_layout
 
-    def debug(self, **kwargs):
-        draw_layout_debug(self.areas, **kwargs)
+    def debug(self):
+        draw_layout_debug(self.areas)
         return self
         
     def names(self):
@@ -413,8 +411,7 @@ class Layout:
         debug_outline=False, 
         debug_labels=False, 
         debug_centers=False, 
-        debug_grid=False, 
-        **kwargs
+        debug_grid=False
     ):
         grid = GridLayout(
             x=x,
@@ -422,8 +419,7 @@ class Layout:
             width=self.width,
             height=self.height,
             grid_size=self.grid_size,
-            cell_padding=cell_padding,
-            **kwargs
+            cell_padding=cell_padding
         )
         self.place_into(grid)
         debug_fill, debug_outline, debug_labels, debug_centers, debug_grid = _resolve_debug_options(debug, debug_fill, debug_outline, debug_labels, debug_centers, debug_grid)
@@ -435,7 +431,6 @@ class Layout:
             fill=debug_fill, 
             outline=debug_outline, 
             labels=debug_labels, 
-            center_mark=debug_centers, 
-            **kwargs
+            center_mark=debug_centers
         )
         return grid
