@@ -3,7 +3,7 @@ import displayio
 import terminalio
 from adafruit_display_shapes.rect import Rect
 from adafruit_display_text import label
-from circuitpython_template_layout import Layout
+from circuitpython_grid_template_areas import Layout
 
 # Setup Display
 display = board.DISPLAY

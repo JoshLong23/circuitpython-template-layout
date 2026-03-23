@@ -4,7 +4,7 @@ import terminalio
 
 from adafruit_display_text import label
 from adafruit_display_shapes.rect import Rect
-from circuitpython_template_layout import Layout
+from circuitpython_grid_template_areas import Layout
 
 # Setup Display
 display = board.DISPLAY
@@ -70,7 +70,7 @@ for area, text in zip(day_areas, day_names):
     area.center(day_label)
 
 # Append layout to main group
-main_group.append(layout.make_grid_layout(debug_grid=True))
+main_group.append(layout.make_grid_layout())
 
 display.refresh() # For e-ink displays, do not refresh display inside loop
 

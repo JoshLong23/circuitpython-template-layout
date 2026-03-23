@@ -1,7 +1,7 @@
 import board
 import displayio
 
-from circuitpython_template_layout import Layout
+from circuitpython_grid_template_areas import Layout
 
 # Setup Display
 display = board.DISPLAY

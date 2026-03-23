@@ -106,30 +106,8 @@ class Area:
         sublayout.place_into(grid)
         self.group.append(grid)
 
-        _resolve_debug_options(debug, debug_fill, debug_outline, debug_labels, debug_centers, debug_grid)
-        """
-        # Draw col/row grid
-        if debug_grid is not False:
-            color = debug_grid if type(debug_grid) is int else 0x808080
-            
-            grid_row_pos = []
-            grid_col_pos = []
-            for area in sublayout.all():
-                # Use GridLayout math to calculate row height and col width
-                right = int((area.col + area.col_span) * self.width / sublayout.cols)
-                bottom = int((area.row + area.row_span) * self.height / sublayout.rows)
-
-                if bottom not in grid_row_pos:
-                    grid_row_pos.append(bottom)
-                
-                if right not in grid_col_pos:
-                    grid_col_pos.append(right)
-            
-            for r in grid_row_pos:
-                grid.append(Line(x0=0, x1=self.width, y0=r, y1=r, color=color))
-            for c in grid_col_pos:
-                grid.append(Line(x0=c, x1=c, y0=0, y1=self.height, color=color))
-        """
+        debug_fill, debug_outline, debug_labels, debug_centers, debug_grid = _resolve_debug_options(debug, debug_fill, debug_outline, debug_labels, debug_centers, debug_grid)
+        
         _draw_grid_lines(grid, sublayout.all(), self.width, self.height, sublayout.cols, sublayout.rows, debug_grid)
         
         draw_layout_debug(
@@ -233,7 +211,7 @@ def _draw_grid_lines(grid, areas, width, height, cols, rows, debug_grid):
     grid_row_pos = []
     grid_col_pos = []
 
-    for area in areas.all():
+    for area in areas:
         right = int((area.col + area.col_span) * width / cols)
         bottom = int((area.row + area.row_span) * height / rows)
 
@@ -448,33 +426,10 @@ class Layout:
             **kwargs
         )
         self.place_into(grid)
+        debug_fill, debug_outline, debug_labels, debug_centers, debug_grid = _resolve_debug_options(debug, debug_fill, debug_outline, debug_labels, debug_centers, debug_grid)
         
-        _resolve_debug_options(debug, debug_fill, debug_outline, debug_labels, debug_centers, debug_grid)
-        """
-        # Draw col/row grid
-        if debug_grid is not False:
-            color = debug_grid if type(debug_grid) is int else 0x808080
-            
-            grid_row_pos = []
-            grid_col_pos = []
-            for area in self.areas.all():
-                # Use GridLayout math to calculate row height and col width
-                right = int((area.col + area.col_span) * self.width / self.cols)
-                bottom = int((area.row + area.row_span) * self.height / self.rows)
-
-                if bottom not in grid_row_pos:
-                    grid_row_pos.append(bottom)
-                
-                if right not in grid_col_pos:
-                    grid_col_pos.append(right)
-            
-            for r in grid_row_pos:
-                grid.append(Line(x0=0, x1=self.width, y0=r, y1=r, color=color))
-            for c in grid_col_pos:
-                grid.append(Line(x0=c, x1=c, y0=0, y1=self.height, color=color))
-        """
         _draw_grid_lines(grid, self.areas.all(), self.width, self.height, self.cols, self.rows, debug_grid)
-
+        
         draw_layout_debug(
             self.areas, 
             fill=debug_fill, 
