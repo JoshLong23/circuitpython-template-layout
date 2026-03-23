@@ -106,19 +106,11 @@ class Area:
         sublayout.place_into(grid)
         self.group.append(grid)
 
-        if not debug == False:
-            debug_fill=False
-            debug_outline=True 
-            debug_labels=True 
-            debug_centers=0x808080
-            debug_grid=0x808080
-
+        _resolve_debug_options(debug, debug_fill, debug_outline, debug_labels, debug_centers, debug_grid)
+        """
         # Draw col/row grid
-        if not debug_grid == False or type(debug_grid) == int:
-            if isinstance(debug_grid, int):
-                color = debug_grid
-            else:
-                color = 0x808080
+        if debug_grid is not False:
+            color = debug_grid if type(debug_grid) is int else 0x808080
             
             grid_row_pos = []
             grid_col_pos = []
@@ -137,6 +129,8 @@ class Area:
                 grid.append(Line(x0=0, x1=self.width, y0=r, y1=r, color=color))
             for c in grid_col_pos:
                 grid.append(Line(x0=c, x1=c, y0=0, y1=self.height, color=color))
+        """
+        _draw_grid_lines(grid, sublayout.all(), self.width, self.height, sublayout.cols, sublayout.rows, debug_grid)
         
         draw_layout_debug(
             sublayout, 
@@ -208,6 +202,50 @@ def _normalize_name(name):
     name = str(name)
     return name[:-1] if name.endswith("*") else name
 
+def _resolve_debug_options(
+    debug=False,
+    debug_fill=False,
+    debug_outline=False,
+    debug_labels=False,
+    debug_centers=False,
+    debug_grid=False,
+):
+    if debug:
+        if debug_fill is False:
+            debug_fill = False
+        if debug_outline is False:
+            debug_outline = True
+        if debug_labels is False:
+            debug_labels = True
+        if debug_centers is False:
+            debug_centers = 0x808080
+        if debug_grid is False:
+            debug_grid = 0x808080
+
+    return debug_fill, debug_outline, debug_labels, debug_centers, debug_grid
+
+def _draw_grid_lines(grid, areas, width, height, cols, rows, debug_grid):
+    if debug_grid is False:
+        return
+    
+    color = debug_grid if type(debug_grid) is int else 0x808080
+
+    grid_row_pos = []
+    grid_col_pos = []
+
+    for area in areas.all():
+        right = int((area.col + area.col_span) * width / cols)
+        bottom = int((area.row + area.row_span) * height / rows)
+
+        if bottom not in grid_row_pos:
+            grid_row_pos.append(bottom)
+        if right not in grid_col_pos:
+            grid_col_pos.append(right)
+    
+    for r in grid_row_pos:
+        grid.append(Line(x0=0, x1=width, y0=r, y1=r, color=color))
+    for c in grid_col_pos:
+        grid.append(Line(x0=c, x1=c, y0=0, y1=height, color=color))
 
 def placement_from_coords(name, coords):
     min_r = min(r for r, _ in coords)
@@ -411,19 +449,11 @@ class Layout:
         )
         self.place_into(grid)
         
-        if not debug == False:
-            debug_fill=False
-            debug_outline=True 
-            debug_labels=True 
-            debug_centers=0x808080
-            debug_grid=0x808080
-
+        _resolve_debug_options(debug, debug_fill, debug_outline, debug_labels, debug_centers, debug_grid)
+        """
         # Draw col/row grid
-        if not debug_grid == False or type(debug_grid) == int:
-            if isinstance(debug_grid, int):
-                color = debug_grid
-            else:
-                color = 0x808080
+        if debug_grid is not False:
+            color = debug_grid if type(debug_grid) is int else 0x808080
             
             grid_row_pos = []
             grid_col_pos = []
@@ -442,7 +472,9 @@ class Layout:
                 grid.append(Line(x0=0, x1=self.width, y0=r, y1=r, color=color))
             for c in grid_col_pos:
                 grid.append(Line(x0=c, x1=c, y0=0, y1=self.height, color=color))
-        
+        """
+        _draw_grid_lines(grid, self.areas.all(), self.width, self.height, self.cols, self.rows, debug_grid)
+
         draw_layout_debug(
             self.areas, 
             fill=debug_fill, 
